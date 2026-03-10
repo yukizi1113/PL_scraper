@@ -1,4 +1,4 @@
-# PL Scraper (`pl_scraper_3files_r25.py`)
+# PL Scraper (`pl_scraper_3files_r33.py`)
 
 日本上場企業の **PL（損益計算書）指標** を EDINET / TDNet / Kabutan から自動取得し、Excel テンプレートを一括更新するスクレイパー。
 
@@ -13,7 +13,7 @@
 | 値の単位 | 百万円（千円単位の開示は自動変換） |
 | 上書きポリシー | **空欄のみ**書き込み。既存値は保護（±2 百万円以上の乖離で橙 WARN） |
 | 対応銘柄コード | 4 桁数字（例: 9760）および英数混合（例: 142A）の新形式 |
-| バージョン | r25 |
+| バージョン | r33 |
 
 ---
 
@@ -73,7 +73,7 @@ Python 3.9 以上を推奨。
 ### 基本（3 ファイル同時実行）
 
 ```bash
-python pl_scraper_3files_r25.py \
+python pl_scraper_3files_r33.py \
   --input       データ取得_PL.xlsx          --output      _out_pl.xlsx \
   --half-input  データ取得_半期累積.xlsx    --half-output _out_half.xlsx \
   --annual-input 年次_データ取得.xlsx       --annual-output _out_annual.xlsx \
@@ -86,7 +86,7 @@ Windows（コマンドプロンプト）では `\` を `^` に置き換えてく
 ### 単独ファイルのみ
 
 ```bash
-python pl_scraper_3files_r25.py \
+python pl_scraper_3files_r33.py \
   --input データ取得_PL.xlsx --output _out_pl.xlsx \
   --edinet-api-key <YOUR_EDINET_API_KEY>
 ```
@@ -94,7 +94,7 @@ python pl_scraper_3files_r25.py \
 ### 特定 ticker のみ処理（テスト用）
 
 ```bash
-python pl_scraper_3files_r25.py \
+python pl_scraper_3files_r33.py \
   --input データ取得_PL.xlsx --output _out_pl.xlsx \
   --edinet-api-key <YOUR_EDINET_API_KEY> \
   --tickers "4395,4912,436A,5830"
@@ -103,7 +103,7 @@ python pl_scraper_3files_r25.py \
 ### 処理行数を制限（スモークテスト）
 
 ```bash
-python pl_scraper_3files_r25.py \
+python pl_scraper_3files_r33.py \
   --input データ取得_PL.xlsx --output _out_pl.xlsx \
   --edinet-api-key <YOUR_EDINET_API_KEY> \
   --limit 5
@@ -154,7 +154,7 @@ python pl_scraper_3files_r25.py \
 - 直近 180 日分を対象（公開期間が短いため）。
 - XBRL ZIP を直接ダウンロードして解析。
 
-### 3. TDNet GitHub アーカイブ（r25 追加）
+### 3. TDNet GitHub アーカイブ
 - TDNet LIVE の保存期間切れ分を補完するユーザー管理 GitHub リポジトリ。
 - GitHub REST API（git trees）で ZIP を列挙し `raw.githubusercontent.com` から取得。
 - デフォルトで有効（`--tdnet-github-disable` で無効化）。
@@ -201,12 +201,16 @@ MAX_ABS_MILLION_SANITY=1000000000        # 異常値ガード（百万円単位�
 
 | バージョン | 主な変更 |
 |-----------|---------|
+| r33 | 減価償却費 (`genka`) は CF / CF注記由来のみ採用。`DepreciationSGA` や `AccumulatedDepreciation` の誤採用を遮断し、定性HTMLのCF注記値を最優先化 |
+| r32 | EDINET 半期報告書・有価証券報告書の四半期判定フォールバックを追加し、半期gross取得漏れを修正 |
+| r31 | gross の累積値を、既存シート上の単独値から条件付きで補完する処理を追加 |
+| r30 | 決算期変更銘柄での FY 月推定を、`C:R` の右端有効セルベースに変更 |
 | r25 | TDNet GitHub アーカイブ対応（保存期間切れ補完） |
 | r24 | `ExtraordinaryProfit` 誤採用修正、銀行 BNK 系除外、`ProfitLoss` の `saishu` マッピング追加、CAPEX 合算対応 |
 | r23 | `saishu` で `SummaryOfBusinessResults` 誤採用を修正（false WARN 解消） |
 | r20 | iXBRL コンテキスト適合を最優先に変更（連結/非連結の誤採用を修正） |
 
-詳細は [`HANDOFF_PL_scraper_r25.md`](./HANDOFF_PL_scraper_r25.md) を参照。
+詳細は [`HANDOFF_PL_scraper_r33.md`](./HANDOFF_PL_scraper_r33.md) を参照。旧版の記録は [`HANDOFF_PL_scraper_r25.md`](./HANDOFF_PL_scraper_r25.md)。
 
 ---
 
