@@ -1,9 +1,40 @@
-# HANDOFF_PL_scraper_r34.md
+# HANDOFF_PL_scraper.md
 
 ## 概要
 - 作業ディレクトリ: `C:\Users\hp\Documents\Investment`
-- 最新スクリプト: `pl_scraper_3files_r34.py`
+- 最新スクリプト: `pl_scraper_3files.py`
 - 目的: 減価償却費 (`genka`) の誤取得を是正し、損益計算書や貸借対照表由来の減価償却関連概念を採用しないようにする
+
+## r36 の修正内容
+1. Kabutan 取得失敗を全体停止条件から除外
+- 背景:
+  - Kabutan は preflight-required source ではないが、個別銘柄の `504` で `SourceAccessError` が上がると全体が中断していた
+- 変更:
+  - `collect_records_for_ticker()` の Kabutan 取得を `try/except SourceAccessError` で囲み、`skip_optional_source` としてログへ残して継続
+- 効果:
+  - 例: `https://kabutan.jp/stock/finance?code=7116` が `504` でも、EDINET/TDNet の取得結果は保持したまま処理続行
+
+2. fatal abort 時の途中保存を追加
+- 対象:
+  - `SourceAccessError` による即時中断時
+- 変更:
+  - その時点までの PL workbook を `args.output` に best-effort 保存
+  - `args.log_csv` があれば partial log も保存
+- 目的:
+  - 数時間実行後の fatal error でも、そこまでの反映結果を完全に失わないようにする
+
+## r35 の修正内容
+1. EDINET APIキーの候補を自動解決
+- 対象:
+  - `--edinet-api-key`
+  - 環境変数 `EDINET_API_KEY`
+  - ワークスペース直下の `.env`
+- 目的:
+  - ノートブック / subprocess / PowerShell で環境変数が食い違っていても、ローカル `.env` に正しいキーがあれば継続実行できるようにする
+
+2. preflight で有効だった EDINET キーを後続処理へ引き継ぐ
+- `preflight_required_sources()` が有効キーを返し、`run()` が `args.edinet_api_key` に再設定
+- これにより preflight 通過後の EDINET index / ZIP取得も同じ有効キーで動作する
 
 ## r34 の修正内容
 1. EDINET preflight の認証方式を本体処理と同じに統一
@@ -72,17 +103,23 @@
 - 175A: TDNet決算短信からのgross取得と決算期補完が維持されること
 
 ## 主要なコード位置
-- バージョン更新: `pl_scraper_3files_r34.py:64`
-- EDINET preflight 認証統一: `pl_scraper_3files_r34.py:4606`
-- `genka` 候補の信頼性判定: `pl_scraper_3files_r34.py:3045`
-- `genka` に対するCF注記優先: `pl_scraper_3files_r34.py:3300`
+- バージョン更新: `pl_scraper_3files_r36.py:64`
+- Kabutan optional skip: `pl_scraper_3files_r36.py:5494`
+- fatal abort partial save: `pl_scraper_3files_r36.py:5505`
+- EDINET キー候補解決: `pl_scraper_3files_r36.py:149`
+- EDINET preflight 認証統一 / 有効キー返却: `pl_scraper_3files_r36.py:4629`
+- `genka` 候補の信頼性判定: `pl_scraper_3files_r36.py:3087`
+- `genka` に対するCF注記優先: `pl_scraper_3files_r36.py:3342`
 
 ## 既知事項
-- `python -m py_compile pl_scraper_3files_r34.py` は通過
+- `python -m py_compile pl_scraper_3files_r36.py` は通過
+- 実行確認:
+  - 通常実行: `_smoke5_pl_v36.xlsx` まで `errors=0`
+  - Kabutan 強制 `504` 実行: `_kabufail_pl_v36.xlsx` まで `errors=0`
 
 ## ファイル
-- 実装: `pl_scraper_3files_r34.py`
-- 引継ぎ: `HANDOFF_PL_scraper_r34.md`
+- 実装: `pl_scraper_3files_r36.py`
+- 引継ぎ: `HANDOFF_PL_scraper_r36.md`
 - 検証出力:
   - `_v6_focus4_pl_v33.xlsx`
   - `_v6_focus4_v33_log.csv`

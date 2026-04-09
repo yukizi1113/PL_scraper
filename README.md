@@ -1,4 +1,4 @@
-# PL Scraper (`pl_scraper_3files_r36.py`)
+# PL Scraper (`pl_scraper_3files.py`)
 
 日本上場企業の **PL（損益計算書）指標** を EDINET / TDNet / Kabutan から自動取得し、Excel テンプレートを一括更新するスクレイパー。
 
@@ -73,7 +73,7 @@ Python 3.9 以上を推奨。
 ### 基本（3 ファイル同時実行）
 
 ```bash
-python pl_scraper_3files_r36.py \
+python pl_scraper_3files.py \
   --input       データ取得_PL.xlsx          --output      _out_pl.xlsx \
   --half-input  データ取得_半期累積.xlsx    --half-output _out_half.xlsx \
   --annual-input 年次_データ取得.xlsx       --annual-output _out_annual.xlsx \
@@ -86,7 +86,7 @@ Windows（コマンドプロンプト）では `\` を `^` に置き換えてく
 ### 単独ファイルのみ
 
 ```bash
-python pl_scraper_3files_r36.py \
+python pl_scraper_3files.py \
   --input データ取得_PL.xlsx --output _out_pl.xlsx \
   --edinet-api-key <YOUR_EDINET_API_KEY>
 ```
@@ -94,7 +94,7 @@ python pl_scraper_3files_r36.py \
 ### 特定 ticker のみ処理（テスト用）
 
 ```bash
-python pl_scraper_3files_r36.py \
+python pl_scraper_3files.py \
   --input データ取得_PL.xlsx --output _out_pl.xlsx \
   --edinet-api-key <YOUR_EDINET_API_KEY> \
   --tickers "4395,4912,436A,5830"
@@ -103,7 +103,7 @@ python pl_scraper_3files_r36.py \
 ### 処理行数を制限（スモークテスト）
 
 ```bash
-python pl_scraper_3files_r36.py \
+python pl_scraper_3files.py \
   --input データ取得_PL.xlsx --output _out_pl.xlsx \
   --edinet-api-key <YOUR_EDINET_API_KEY> \
   --limit 5
@@ -216,7 +216,7 @@ MAX_ABS_MILLION_SANITY=1000000000        # 異常値ガード（百万円単位�
 | r23 | `saishu` で `SummaryOfBusinessResults` 誤採用を修正（false WARN 解消） |
 | r20 | iXBRL コンテキスト適合を最優先に変更（連結/非連結の誤採用を修正） |
 
-詳細は [`HANDOFF_PL_scraper_r36.md`](./HANDOFF_PL_scraper_r36.md) を参照。旧版の記録は [`HANDOFF_PL_scraper_r35.md`](./HANDOFF_PL_scraper_r35.md), [`HANDOFF_PL_scraper_r34.md`](./HANDOFF_PL_scraper_r34.md), [`HANDOFF_PL_scraper_r33.md`](./HANDOFF_PL_scraper_r33.md), [`HANDOFF_PL_scraper_r25.md`](./HANDOFF_PL_scraper_r25.md)。
+詳細は [`HANDOFF_PL_scraper.md`](./HANDOFF_PL_scraper.md) を参照。過去版は git history に残ります。
 
 ---
 
